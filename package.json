@@ -9,7 +9,9 @@
     "test:ui": "playwright test --ui",
     "report": "playwright show-report",
     "typecheck": "tsc -p .",
-    "test:mobile": "playwright test --project=mobile-chrome --project=mobile-safari"
+    "test:mobile": "playwright test --project=mobile-chrome --project=mobile-safari",
+    "docker:build": "docker build -t playwright-e2e .",
+    "docker:test": "docker compose run --rm tests"
   },
   "keywords": [],
   "author": "",
