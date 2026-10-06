@@ -1,0 +1,54 @@
+name: Playwright Tests (Docker)
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Build test image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          tags: playwright-e2e:ci
+          load: true
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Typecheck
+        run: docker run --rm playwright-e2e:ci npm run typecheck
+
+      - name: Run Playwright tests in Docker
+        run: |
+          docker run --rm --init --ipc=host \
+            -e CI=true \
+            -v "${{ github.workspace }}/playwright-report:/app/playwright-report" \
+            -v "${{ github.workspace }}/test-results:/app/test-results" \
+            playwright-e2e:ci
+
+      - name: Upload HTML report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 14
+
+      - name: Upload traces, screenshots and videos
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: test-results/
+          retention-days: 14
