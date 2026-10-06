@@ -41,10 +41,17 @@ test.describe('Mobile — navigation menu', () => {
   });
 
   test('tapping outside resets aria-expanded on the menu button', async ({ homePage }) => {
-    test.fail(true, 'Known bug: outside-click handler in script.js removes .open but leaves aria-expanded="true"');
     await homePage.openMobileMenu();
     await homePage.heading.tap();
-    await expect(homePage.menuButton).toHaveAttribute('aria-expanded', 'false', { timeout: 2000 });
+    await expect(homePage.menuButton).toHaveAttribute('aria-expanded', 'false');
+  });
+
+  test('tapping outside closes the menu on the blog page too', async ({ blogPage }) => {
+    await blogPage.goto();
+    await blogPage.openMobileMenu();
+    await blogPage.searchInput.tap();
+    await expect(blogPage.navList).not.toHaveClass(/\bopen\b/);
+    await expect(blogPage.menuButton).toHaveAttribute('aria-expanded', 'false');
   });
 
   test('menu Blog link opens the blog', async ({ homePage, blogPage, page }) => {
