@@ -9,7 +9,8 @@ End-to-end tests for [markolosic.github.io](https://markolosic.github.io) writte
 pages/          Page objects (BasePage, HomePage, BlogPage, BlogPostPage)
 fixtures/       Custom test fixture that injects page objects into tests
 test-data/      Expected content used by the assertions
-tests/          Spec files (home page, blog list, blog post, mobile nav)
+tests/          Desktop specs (home page, blog list, blog post)
+tests/mobile/   Mobile specs (menu, layout, blog) — Pixel 7 and iPhone 14
 ```
 
 ## Setup
@@ -22,8 +23,9 @@ npx playwright install
 ## Running
 
 ```bash
-npm test                 # all browsers (Chromium, Firefox, WebKit, mobile Chrome)
+npm test                 # all browsers (Chromium, Firefox, WebKit, mobile Chrome, mobile Safari)
 npm run test:chromium    # Chromium only
+npm run test:mobile      # mobile devices only
 npm run test:headed      # watch the browser
 npm run test:ui          # Playwright UI mode
 npm run report           # open the last HTML report

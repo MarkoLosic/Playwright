@@ -45,6 +45,21 @@ export abstract class BasePage {
     await expect(this.menuButton).toHaveAttribute('aria-expanded', 'true');
   }
 
+  async closeMobileMenu() {
+    await this.menuButton.click();
+    await expect(this.menuButton).toHaveAttribute('aria-expanded', 'false');
+  }
+
+  /** The nav list is always in the DOM on mobile; it is shown by the `open` class. */
+  get navList(): Locator {
+    return this.page.locator('nav#links');
+  }
+
+  /** Width of the document beyond the viewport (0 = no horizontal scroll). */
+  async horizontalOverflow(): Promise<number> {
+    return this.page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
+  }
+
   async currentTheme(): Promise<string | null> {
     return this.html.getAttribute('data-theme');
   }
