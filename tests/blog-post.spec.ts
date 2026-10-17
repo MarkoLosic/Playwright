@@ -1,4 +1,5 @@
 import { test, expect } from '../fixtures/pages';
+import { blog } from '../test-data/portfolio';
 
 test.describe('Blog post', () => {
   test.beforeEach(async ({ blogPage }) => {
@@ -13,6 +14,17 @@ test.describe('Blog post', () => {
     await expect(blogPostPage.meta).toContainText('min read');
     expect(await blogPostPage.tags.count()).toBeGreaterThan(0);
     await expect(blogPostPage.prose.locator('h2').first()).toBeVisible();
+  });
+
+  test('shows the expected article content', async ({ blogPostPage }) => {
+    await expect(blogPostPage.title).toHaveText(blog.featuredPost.title);
+    await expect(blogPostPage.lead).toHaveText(blog.featuredPost.lead);
+    await expect(blogPostPage.publishedDate).toHaveAttribute('datetime', blog.featuredPost.date);
+
+    for (const heading of blog.featuredPost.sectionHeadings) {
+      await expect(blogPostPage.sectionHeading(heading)).toBeVisible();
+    }
+    await expect(blogPostPage.prose).toContainText(blog.featuredPost.bodyText);
   });
 
   test('page title matches the post heading', async ({ blogPostPage, page }) => {

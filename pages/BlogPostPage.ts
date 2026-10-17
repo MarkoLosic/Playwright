@@ -6,6 +6,7 @@ export class BlogPostPage extends BasePage {
   readonly title: Locator;
   readonly lead: Locator;
   readonly meta: Locator;
+  readonly publishedDate: Locator;
   readonly tags: Locator;
   readonly prose: Locator;
   readonly backLink: Locator;
@@ -19,11 +20,16 @@ export class BlogPostPage extends BasePage {
     this.title = page.locator('article h1');
     this.lead = page.locator('.post-head .lead');
     this.meta = page.locator('.post-head .meta');
+    this.publishedDate = this.meta.locator('time');
     this.tags = page.locator('.post-head .tags span');
     this.prose = page.locator('article .prose');
     this.backLink = page.locator('a.back');
     this.copyLinkButton = page.locator('#share');
     this.contactButton = page.locator('.post-end a.btn.primary');
     this.morePosts = page.locator('.more-posts .post-card');
+  }
+
+  sectionHeading(name: string): Locator {
+    return this.prose.getByRole('heading', { name, level: 2 });
   }
 }

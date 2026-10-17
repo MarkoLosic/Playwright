@@ -17,11 +17,16 @@ test.describe('Blog list', () => {
   test('every post card has a title, date and link', async ({ blogPage }) => {
     const count = await blogPage.posts.count();
     for (let i = 0; i < count; i++) {
-      const card = blogPage.posts.nth(i);
-      await expect(card.locator('h2')).not.toBeEmpty();
-      await expect(card.locator('time')).toHaveAttribute('datetime', /^\d{4}-\d{2}-\d{2}$/);
-      await expect(card).toHaveAttribute('href', /.+\/$/);
+      await expect(blogPage.postTitle(i)).not.toBeEmpty();
+      await expect(blogPage.postDate(i)).toHaveAttribute('datetime', /^\d{4}-\d{2}-\d{2}$/);
+      await expect(blogPage.posts.nth(i)).toHaveAttribute('href', /.+\/$/);
     }
+  });
+
+  test('featured post displays its expected title, summary and date', async ({ blogPage }) => {
+    await expect(blogPage.postTitle()).toHaveText(blog.featuredPost.title);
+    await expect(blogPage.postExcerpt()).toHaveText(blog.featuredPost.excerpt);
+    await expect(blogPage.postDate()).toHaveAttribute('datetime', blog.featuredPost.date);
   });
 
   test('posts are sorted newest first', async ({ blogPage }) => {

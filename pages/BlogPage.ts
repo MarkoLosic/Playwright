@@ -38,6 +38,18 @@ export class BlogPage extends BasePage {
     await this.tagButton(tag).click();
   }
 
+  postTitle(index = 0): Locator {
+    return this.posts.nth(index).locator('h2');
+  }
+
+  postExcerpt(index = 0): Locator {
+    return this.posts.nth(index).locator('p');
+  }
+
+  postDate(index = 0): Locator {
+    return this.posts.nth(index).locator('time');
+  }
+
   async openPost(index = 0) {
     await this.visiblePosts.nth(index).click();
   }
