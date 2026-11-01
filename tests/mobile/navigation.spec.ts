@@ -1,8 +1,14 @@
 import { test, expect } from '../../fixtures/pages';
 
 test.describe('Mobile — navigation menu', () => {
-  test.beforeEach(async ({ homePage }) => {
+  test.beforeEach(async ({ homePage, page }) => {
     await homePage.goto();
+    const acceptCookies = page
+      .getByRole('region', { name: 'Cookie consent' })
+      .getByRole('button', { name: 'Accept' });
+    if (await acceptCookies.isVisible()) {
+      await acceptCookies.tap();
+    }
   });
 
   test('shows the hamburger button and keeps the menu closed by default', async ({ homePage }) => {
@@ -36,14 +42,16 @@ test.describe('Mobile — navigation menu', () => {
 
   test('tapping outside the header closes the menu', async ({ homePage }) => {
     await homePage.openMobileMenu();
-    await homePage.heading.tap();
-    await expect(homePage.navList).not.toHaveClass(/\bopen\b/);
-  });
-
-  test('tapping outside resets aria-expanded on the menu button', async ({ homePage }) => {
-    await homePage.openMobileMenu();
-    await homePage.heading.tap();
+    const viewport = homePage.page.viewportSize();
+    if (!viewport) {
+      throw new Error('Expected a viewport size for the mobile test');
+    }
+    await homePage.page.touchscreen.tap(
+      Math.round(viewport.width * 0.9),
+      Math.round(viewport.height * 0.75),
+    );
     await expect(homePage.menuButton).toHaveAttribute('aria-expanded', 'false');
+    await expect(homePage.navList).not.toHaveClass(/\bopen\b/);
   });
 
   test('tapping outside closes the menu on the blog page too', async ({ blogPage }) => {
