@@ -29,6 +29,12 @@ test.describe('Blog list', () => {
     await expect(blogPage.postDate()).toHaveAttribute('datetime', blog.featuredPost.date);
   });
 
+  test('security tag includes the featured Binance post', async ({ blogPage }) => {
+    await blogPage.filterByTag('security-testing');
+    await expect(blogPage.tagButton('security-testing')).toHaveClass(/\bon\b/);
+    await expect(blogPage.postTitle()).toHaveText(blog.featuredPost.title);
+  });
+
   test('posts are sorted newest first', async ({ blogPage }) => {
     const dates = await blogPage.posts.locator('time').evaluateAll(els => els.map(e => e.getAttribute('datetime') ?? ''));
     expect(dates).toEqual([...dates].sort().reverse());

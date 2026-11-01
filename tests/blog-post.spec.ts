@@ -27,6 +27,35 @@ test.describe('Blog post', () => {
     await expect(blogPostPage.prose).toContainText(blog.featuredPost.bodyText);
   });
 
+  test('shows the article image and source list', async ({ blogPostPage, page, request }) => {
+    const image = blogPostPage.prose.locator('img').first();
+    await image.scrollIntoViewIfNeeded();
+    await expect(image).toBeVisible();
+    await expect(image).toHaveAttribute('alt', /laptop/i);
+    const imageSrc = await image.getAttribute('src');
+    expect(imageSrc).toMatch(/binance-6-3-billion-hack-devops-laptop\.jpg$/);
+    const imageResponse = await request.get(new URL(imageSrc!, page.url()).href);
+    expect(imageResponse.ok()).toBeTruthy();
+    expect(imageResponse.headers()['content-type']).toContain('image/jpeg');
+
+    await expect(blogPostPage.sectionHeading('Sources')).toBeVisible();
+    await expect(blogPostPage.prose).toContainText('Hackread');
+    await expect(blogPostPage.prose).toContainText('TechCrunch');
+  });
+
+  test('translates the article title to Serbian and persists the language', async ({ blogPostPage, page }) => {
+    await blogPostPage.switchLanguage();
+    await expect(blogPostPage.html).toHaveAttribute('lang', 'sr');
+    await expect(blogPostPage.title).toHaveText(blog.featuredPost.titleSr);
+
+    await page.reload();
+    await expect(blogPostPage.title).toHaveText(blog.featuredPost.titleSr);
+
+    await blogPostPage.switchLanguage();
+    await expect(blogPostPage.html).toHaveAttribute('lang', 'en');
+    await expect(blogPostPage.title).toHaveText(blog.featuredPost.title);
+  });
+
   test('page title matches the post heading', async ({ blogPostPage, page }) => {
     const heading = (await blogPostPage.title.textContent())!.trim();
     await expect(page).toHaveTitle(new RegExp(heading.slice(0, 20).replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
