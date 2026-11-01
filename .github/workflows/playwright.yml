@@ -1,0 +1,35 @@
+name: Playwright tests
+
+on:
+  push:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Build Playwright Docker image
+        run: docker build --tag playwright-tests .
+
+      - name: Run Playwright tests in Docker
+        run: |
+          mkdir -p playwright-report test-results
+          docker run --rm --ipc=host --env CI=true \
+            --volume "$GITHUB_WORKSPACE/playwright-report:/app/playwright-report" \
+            --volume "$GITHUB_WORKSPACE/test-results:/app/test-results" \
+            playwright-tests
+
+      - name: Upload Playwright reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: |
+            playwright-report/
+            test-results/
+          if-no-files-found: ignore

@@ -31,6 +31,19 @@ npm run test:ui          # Playwright UI mode
 npm run report           # open the last HTML report
 ```
 
+## Docker and GitHub Actions
+
+Tests can also be run in the same Playwright Docker image used by GitHub Actions:
+
+```bash
+docker build -t playwright-tests .
+docker run --rm --ipc=host playwright-tests
+```
+
+The GitHub Actions workflow runs the full test suite in Docker on every push.
+HTML reports and test results are uploaded as workflow artifacts, including when
+tests fail.
+
 Set `BASE_URL` to run against another environment, e.g. a local copy of the site:
 
 ```bash
